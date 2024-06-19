@@ -1,0 +1,38 @@
+[
+    {
+        "functionality": {
+            "name": "LIDAR_12V",
+            "outputs": ["EN_S2"],
+            "enabled": true
+        }
+    },
+    {
+        "functionality": {
+            "name": "PC_19V",
+            "outputs": ["EN_S4"],
+            "enabled": true
+        }
+    },
+    {
+        "functionality": {
+            "name": "MTR_CTL_LOGIC_POW",
+            "outputs": ["VO_58"],
+            "enabled": true
+        }
+    },
+    {
+        "functionality": {
+            "name": "MTR_1_POW",
+            "outputs": ["VO_0", "VO_1", "VO_2", "VO_10", "VO_3", "VO_11", "VO_4"],
+            "enabled": true
+        }
+    },
+    {
+        "functionality": {
+            "name": "MTR_2_POW",
+            "outputs": ["VO_5", "VO_6", "VO_7", "VO_14", "VO_15", "VO_19", "VO_20"],
+            "enabled": true
+        }
+    }
+
+]
