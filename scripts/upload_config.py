@@ -1,3 +1,6 @@
+#! /usr/bin/env python3
+
+import os
 import argparse
 import json
 import rclpy
@@ -6,9 +9,18 @@ from std_msgs.msg import String
 import time
 import random
 
+from ament_index_python.packages import get_package_share_directory
+
 class configurePcbNode(Node):
-    def __init__(self, filename):
+    def __init__(self, filename=None):
         super().__init__('pcb_configure')
+
+        self.get_logger().info(f"Node {self.get_name()} started!")
+
+        #time.sleep(3)  # Sleep to wait for subscriber node
+
+        self.__package_name = "squad_robotics_pdu"
+        self.__config_filename = "config.json"
 
         self.publisher_ = self.create_publisher(String, '/f2pcb', 10)
         self.subscription = self.create_subscription( String, '/pcb2f', self.listener_callback, 10)
@@ -22,11 +34,13 @@ class configurePcbNode(Node):
         self.lastCmdTime = 0
         self.lastCmdRetry = 0
 
-        self.generate_messages(filename)
+        self.get_logger().info(f"Node {self.get_name()} configured!")
+
+        self.generate_messages()
 
 
     def listener_callback(self, msg):
-        print(msg.data)
+        self.get_logger().info(f"listener_callback(): {msg.data}")
         self.gotMessages.append(json.loads(msg.data))
 
     def got_response(self):
@@ -39,12 +53,19 @@ class configurePcbNode(Node):
             return 1
         return 0
 
-    def generate_messages(self, filename):
+    def generate_messages(self):
+        
+        file_path = os.path.join(
+            get_package_share_directory(self.__package_name),
+            "config",
+            self.__config_filename
+        )
+
         try:
-            with open(filename) as f:
+            with open(file_path) as f:
                 data = json.load(f)
         except FileNotFoundError:
-            self.get_logger().error(f"File {filename} not found.")
+            self.get_logger().error(f"File {file_path} not found.")
             return []
 
         #messages = []
@@ -130,17 +151,13 @@ class configurePcbNode(Node):
             msg.data = json.dumps(message)
             self.lastCmdTime = time.time()
             self.publisher_.publish(msg)
-            self.get_logger().info(f"Published message: {msg.data}")
+            self.get_logger().debug(f"Published message: {msg.data}")
 
 
 def main(args=None):
     rclpy.init(args=args)
 
-    parser = argparse.ArgumentParser(description='functionality configer')
-    parser.add_argument('filename', type=str, help='Path to the JSON file')
-    args = parser.parse_args()
-
-    configure_node = configurePcbNode(args.filename)
+    configure_node = configurePcbNode()
     
     rclpy.spin(configure_node)
     configure_node.destroy_node()

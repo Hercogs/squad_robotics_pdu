@@ -1,0 +1,5 @@
+services:
+  PDU_manager:
+    image: pdu_usb_test:0.1
+    devices:
+      - /dev/ttyPCB:/dev/ttyPCB
