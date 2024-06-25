@@ -1,5 +1,9 @@
 #!/bin/bash
 
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
+cd "$parent_path"
+
 for f in /usr/lib/udev/rules.d/*brltty*.rules; do
     sudo ln -sf /dev/null "/etc/udev/rules.d/$(basename "$f")"
 done
