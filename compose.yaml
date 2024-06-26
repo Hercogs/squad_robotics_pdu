@@ -1,5 +1,22 @@
+version: "3"
 services:
-  PDU_manager:
-    image: pdu_usb_test:0.1
-    devices:
-      - /dev/ttyPCB:/dev/ttyPCB
+  squad_robotics_pdu:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: squad_robotics_pdu:latest
+    container_name: squad_robotics_pdu
+    privileged: true
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+
+    environment:
+      - ROS_DOMAIN_ID=0
+      - ROBOT_NAME=$ROBOT_NAME
+    
+    volumes:
+      - /dev:/dev
+
+    restart: unless-stopped
+    
+    command: ["ros2", "launch", "squad_robotics_pdu", "launch_pdu.launch.py"]

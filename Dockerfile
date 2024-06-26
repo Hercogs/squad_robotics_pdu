@@ -50,5 +50,5 @@ CMD ["ros2", "launch", "squad_robotics_pdu", "launch_pdu.launch.py"]
 
 # docker build -t squad_robotics_pdu -f Dockerfile .
 
-# docker run --rm -it --privileged -e ROBOT_NAME=$ROBOT_NAME -v /dev:/dev  squad_robotics_pdu
+# docker run --rm -it -e ROBOT_NAME=$ROBOT_NAME  squad_robotics_pdu
 
