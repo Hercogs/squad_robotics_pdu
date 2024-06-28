@@ -55,6 +55,17 @@ def generate_launch_description():
         )
     )
 
+    battery_monitor_service_node = Node(
+        package='squad_robotics_pdu',
+        executable='battery_service.py',
+        namespace=LaunchConfiguration("vikings_bot_name"),
+        name='battery_monitor',
+        output='screen',
+        parameters=[{
+            'robot_name':LaunchConfiguration("vikings_bot_name"),
+        }]
+    )
+
 
 
     return LaunchDescription([
@@ -63,6 +74,7 @@ def generate_launch_description():
 
         # Nodes
         robot_pcb_bridge_node,
-        upload_config_node_delayed
+        upload_config_node_delayed,
+        battery_monitor_service_node
     ])
 

@@ -8,7 +8,7 @@ FROM ros:${ROS_DISTRIBUTION}-ros-base
 
 # Install clang and set as default compiler.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  clang \
+  clang python3-pip iproute2 net-tools ethtool \
   && rm -rf /var/lib/apt/lists/*
 
 # Remove packages
@@ -21,7 +21,9 @@ WORKDIR $ROS_WS_SRC
 # RUN mkdir -p $ROS_WS_SRC/$package_name
 COPY ./ $ROS_WS_SRC/$package_name/
 
-# Set up packages
+# Install python-can with pip since rosdep installation is not supported on jammy
+RUN pip3 install python-can
+
 WORKDIR $ROS_WS_SRC/$package_name/PDU_ros2_node
 RUN apt-get install ./ros-humble-robot-*jammy_amd64.deb
 
