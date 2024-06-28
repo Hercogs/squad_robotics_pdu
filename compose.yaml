@@ -9,6 +9,7 @@ services:
     privileged: true
     stdin_open: true # docker run -i
     tty: true        # docker run -t
+    network_mode: host
 
     environment:
       - ROS_DOMAIN_ID=0

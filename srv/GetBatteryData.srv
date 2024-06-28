@@ -1,0 +1,11 @@
+---
+int64 precentage # %
+float64 voltage # V
+float64 current # A
+int64 full_capacity # mAh
+int64 cycles # count
+int64 remaining_capacity #  mAh
+float64 ntc_1 # Celsius
+float64 ntc_2 # Celsius
+float64 ntc_3 # Celsius
+bool data_valid # if False, one or more fields contain invalid data

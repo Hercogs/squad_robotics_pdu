@@ -9,4 +9,5 @@
 ### To launch docker image:
 ```docker run --rm -it --privileged -e ROBOT_NAME=$ROBOT_NAME -v /dev:/dev squad_robotics_pdu```
 
-### TODO: create compose file!
+### Before launch make sure to setup socketcan on host:
+```sudo ip link set can0 up type can bitrate 250000 && docker compose up```

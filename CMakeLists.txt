@@ -8,18 +8,27 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/GetBatteryData.srv"
+)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 # install(DIRECTORY scripts DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 # Install Python executables
-install(PROGRAMS
-  scripts/upload_config.py
-  DESTINATION lib/${PROJECT_NAME}
+install(
+  PROGRAMS
+    scripts/upload_config.py
+    scripts/battery_service.py
+  DESTINATION
+    lib/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
