@@ -31,7 +31,7 @@ class BatteryMonitorService(Node):
         # )
         self.bus = can.Bus(
             interface='socketcan',
-            channel='can0'
+            channel='vcan0'
         )
 
         self.reader = can.BufferedReader()

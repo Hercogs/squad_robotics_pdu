@@ -8,7 +8,7 @@ FROM ros:${ROS_DISTRIBUTION}-ros-base
 
 # Install clang and set as default compiler.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  clang python3-pip iproute2 net-tools ethtool \
+  clang python3-pip iproute2 net-tools ethtool can-utils autoconf automake \
   && rm -rf /var/lib/apt/lists/*
 
 # Remove packages
@@ -20,6 +20,16 @@ WORKDIR $ROS_WS_SRC
 
 # RUN mkdir -p $ROS_WS_SRC/$package_name
 COPY ./ $ROS_WS_SRC/$package_name/
+
+# Copy launch script seperately
+COPY ./launch.bash /
+
+# install socketcand
+WORKDIR $ROS_WS_SRC/$package_name/socketcand
+RUN ./autogen.sh
+RUN ./configure
+RUN make
+RUN make install
 
 # Install python-can with pip since rosdep installation is not supported on jammy
 RUN pip3 install python-can
@@ -47,7 +57,7 @@ RUN sed --in-place \
       's|^source .*|source "$ROS_WS/install/setup.bash"|' \
       /ros_entrypoint.sh
 
-CMD ["ros2", "launch", "squad_robotics_pdu", "launch_pdu.launch.py"]
+CMD ['bash', '/launch.bash']
 
 
 # docker build -t squad_robotics_pdu -f Dockerfile .

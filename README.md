@@ -1,13 +1,24 @@
 # squad_robotics_pdu
 
+### Setup on host:
+* install socketcand from https://github.com/linux-can/socketcand
+
+This is needed to tunnel CAN interface over to docker when launched with ```network_mode: bridge```.
 
 
 ### To build docker image:
-```docker build --no-cache -t squad_robotics_pdu -f Dockerfile .```
+```
+docker build --no-cache -t squad_robotics_pdu -f Dockerfile .
+```
 
 
 ### To launch docker image:
-```docker run --rm -it --privileged -e ROBOT_NAME=$ROBOT_NAME -v /dev:/dev squad_robotics_pdu```
+<b>sudo rights are needed (only once after connecting CAN adapter)!</b>
 
-### Before launch make sure to setup socketcan on host:
-```sudo ip link set can0 up type can bitrate 250000 && docker compose up```
+```
+bash start_docker_n_can.bash
+```
+<b>This script:</b>
+* initializes CAN
+* starts socketcand server (using docker network interface)
+* brings up docker container with ```docker compose up```

@@ -1,0 +1,3 @@
+[submodule "socketcand"]
+	path = socketcand
+	url = git@github.com:Kriss213/socketcand.git
