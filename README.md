@@ -12,13 +12,16 @@ docker build --no-cache -t squad_robotics_pdu -f Dockerfile .
 ```
 
 
-### To launch docker image:
-<b>sudo rights are needed (only once after connecting CAN adapter)!</b>
+### To start socketcand server and launch docker image
+```
+bash start_docker.bash
+```
 
+### Before launch make sure to setup CAN adapter on host:
+Create udev rules with (needs to be done once):
 ```
-bash start_docker_n_can.bash
+bash udev/create_udev_rules.sh
 ```
-<b>This script:</b>
-* initializes CAN
-* starts socketcand server (using docker network interface)
-* brings up docker container with ```docker compose up```
+__Or__ execute:
+```sudo ip link set can0 up type can bitrate 250000```
+after each time Pcan USB is plugged in.

@@ -3,3 +3,11 @@
 
 SUBSYSTEM=="tty", ATTRS{idProduct}=="7523", ATTRS{idVendor}=="1a86", SYMLINK+="ttyPCB", MODE+="0666"
 SUBSYSTEM=="tty", ATTRS{idProduct}=="7523", ATTRS{idVendor}=="9986", SYMLINK+="ttyPCB", MODE+="0666"
+
+# add udev rules to setup can-usb adapter
+ACTION=="add",
+SUBSYSTEM=="net",
+ATTRS{idVendor}=="0c72",
+ATTRS{idProduct}=="000c",
+NAME=="can0",
+RUN+="/sbin/ip link set can0 up type can bitrate 250000"
