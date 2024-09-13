@@ -5,8 +5,8 @@ from rclpy.node import Node
 from squad_robotics_pdu.srv import GetBatteryData
 import can
 import time
-from std_msgs.msg import Int8
-import subprocess
+from std_msgs.msg import Int8, Int32
+
 
 class BatteryMonitorService(Node):
     def __init__(self):
@@ -20,15 +20,10 @@ class BatteryMonitorService(Node):
             self.get_battery_data_callback)
 
         self.battery_charge_pub = self.create_publisher(msg_type=Int8, topic="battery_charge", qos_profile=10)
-        # Publish battery charge in % every 60 seconds
+        self.battery_current_pub = self.create_publisher(msg_type=Int32, topic="battery_current", qos_profile=10)
+        # Publish battery charge in % every 10 seconds
         self.bat_charge_pub_timer = self.create_timer(timer_period_sec=10, callback=self.publish_battery_charge_callback)
 
-        # init CANBUS
-        # self.bus = can.Bus(
-        #     interface='pcan',
-        #     channel='PCAN_USBBUS1',
-        #     bitrate=250000
-        # )
         self.bus = can.Bus(
             interface='socketcan',
             channel='can0'
@@ -81,17 +76,17 @@ class BatteryMonitorService(Node):
             
             # examine each case
             if msg_id == 0x100:
-                response.voltage = self.__combine_bytes(battery_response, 0,2) / 100 # in Volts
-                response.current = self.__combine_bytes(battery_response, 2,2) / 100 # in Amps
-                response.remaining_capacity = self.__combine_bytes(battery_response, 4, 2) * 10 #in mAh
+                response.voltage = int.from_bytes(battery_response[1::-1], byteorder='little', signed=True) / 100 # in Volts
+                response.current = int.from_bytes(battery_response[3:1:-1], byteorder='little', signed=True) * 10 / 1000
+                response.remaining_capacity = int.from_bytes(battery_response[5:3:-1], byteorder='little', signed=True) *10 #in mAh
             elif msg_id == 0x101:
-                response.full_capacity = self.__combine_bytes(battery_response, 0, 2) * 10 # in mAh
-                response.cycles = self.__combine_bytes(battery_response, 2, 2) # count
-                response.precentage = self.__combine_bytes(battery_response, 4,2) # %
+                response.full_capacity = int.from_bytes(battery_response[1::-1], byteorder='little', signed=True) * 10 # in mAh
+                response.cycles = int.from_bytes(battery_response[3:1:-1], byteorder='little', signed=True) # count
+                response.precentage = int.from_bytes(battery_response[5:3:-1], byteorder='little', signed=True) # %
             elif msg_id == 0x105:
-                response.ntc_1 = round(self.__combine_bytes(battery_response,0, 2) / 10 - 273.15, 4) # in Celsius
-                response.ntc_2 = round(self.__combine_bytes(battery_response,2, 2) / 10 - 273.15, 4) # in Celsius
-                response.ntc_3 = round(self.__combine_bytes(battery_response,4, 2) / 10 - 273.15, 4) # in Celsius
+                response.ntc_1 = round(int.from_bytes(battery_response[1::-1], byteorder='little', signed=True) / 10 - 273.15, 4) # in Celsius
+                response.ntc_2 = round(int.from_bytes(battery_response[3:1:-1], byteorder='little', signed=True) / 10 - 273.15, 4) # in Celsius
+                response.ntc_3 = round(int.from_bytes(battery_response[5:3:-1], byteorder='little', signed=True) / 10 - 273.15, 4) # in Celsius
             else:
                 pass
 
@@ -99,6 +94,9 @@ class BatteryMonitorService(Node):
         return response
 
     def publish_battery_charge_callback(self):
+        """
+        Publish battery charge level and current
+        """
         battery_response = self.__send_CANBUS(msg_id=0x101)
         if battery_response == None or len(list(battery_response)) == 0:
             return #failed attempt
@@ -107,6 +105,15 @@ class BatteryMonitorService(Node):
         msg = Int8()
         msg.data = battery_precentage
         self.battery_charge_pub.publish(msg)
+
+        # get battery current
+        battery_response = self.__send_CANBUS(msg_id=0x100)
+        if battery_response == None or len(list(battery_response)) == 0:
+            return #failed attempt
+        msg = Int32()
+        msg.data = int.from_bytes(battery_response[3:1:-1], byteorder='little', signed=True) * 10 # in mAh
+        self.battery_current_pub.publish(msg)
+
 
     def __combine_bytes(self, data, start_index, num_bytes):
         result = 0
