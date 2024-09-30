@@ -22,7 +22,7 @@ WORKDIR $ROS_WS_SRC
 COPY ./ $ROS_WS_SRC/$package_name/
 
 # Install python-can with pip since rosdep installation is not supported on jammy
-RUN pip3 install python-can
+RUN pip3 install -r requirements.txt
 
 WORKDIR $ROS_WS_SRC/$package_name/PDU_ros2_node
 RUN apt-get install ./ros-humble-robot-*jammy_amd64.deb

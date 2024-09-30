@@ -24,10 +24,17 @@ class BatteryMonitorService(Node):
         # Publish battery charge in % every 10 seconds
         self.bat_charge_pub_timer = self.create_timer(timer_period_sec=10, callback=self.publish_battery_charge_callback)
 
-        self.bus = can.Bus(
-            interface='socketcan',
-            channel='can0'
-        )
+        connected_to_can = False
+        while not connected_to_can:
+            try:
+                self.bus = can.Bus(
+                    interface='socketcan',
+                    channel='can0'
+                )
+                connected_to_can = True
+            except Exception as e:
+                self.get_logger().warn(f"Couldn't estabilsh CAN communication: {e}")
+                time.sleep(1.0)
 
         self.reader = can.BufferedReader()
         self.notifier = can.Notifier(self.bus, [self.reader])
