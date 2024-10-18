@@ -27,6 +27,7 @@ install(
   PROGRAMS
     scripts/upload_config.py
     scripts/battery_service.py
+    scripts/input_state_publisher.py
   DESTINATION
     lib/${PROJECT_NAME}
 )
