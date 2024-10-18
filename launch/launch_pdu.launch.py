@@ -28,7 +28,7 @@ def generate_launch_description():
         executable="robot_pcb_bridge",
         namespace=LaunchConfiguration("vikings_bot_name"),
         output="both",
-        arguments=["--ros-args", "--log-level", "info"]
+        arguments=["--ros-args", "--log-level", "error"]
     )
 
     # upload_config_node
@@ -36,7 +36,8 @@ def generate_launch_description():
         package="squad_robotics_pdu",
         executable="upload_config.py",
         namespace=LaunchConfiguration("vikings_bot_name"),
-        output="both"
+        output="both",
+        arguments=["--ros-args", "--log-level", "error"]
     )
 
     upload_config_node_delayed = RegisterEventHandler(
@@ -66,6 +67,30 @@ def generate_launch_description():
         }]
     )
 
+    input_state_publisher_node = Node(
+        package='squad_robotics_pdu',
+        executable='input_state_publisher.py',
+        namespace=LaunchConfiguration("vikings_bot_name"),
+        name='input_state_publisher',
+        output='screen'
+    )
+
+    publish_input_state_delayed = RegisterEventHandler(
+        OnProcessStart(
+            target_action=upload_config_node,
+            on_start=[
+                LogInfo(msg="upload_config_node started, now publishing input status"),
+                TimerAction(
+                    period=5.0,
+                    actions=[
+                        LogInfo(msg="timer end"),
+                        input_state_publisher_node
+                    ]
+                )
+            ]
+        )
+    )
+
 
 
     return LaunchDescription([
@@ -75,6 +100,7 @@ def generate_launch_description():
         # Nodes
         robot_pcb_bridge_node,
         upload_config_node_delayed,
+        publish_input_state_delayed,
         battery_monitor_service_node
     ])
 
