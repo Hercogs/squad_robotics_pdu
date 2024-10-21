@@ -12,7 +12,7 @@ services:
     network_mode: host
 
     environment:
-      - ROS_DOMAIN_ID=0
+      - ROS_DOMAIN_ID=$ROS_DOMAIN_ID
       - ROBOT_NAME=$ROBOT_NAME
     
     volumes:
