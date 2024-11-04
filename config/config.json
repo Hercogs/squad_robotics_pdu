@@ -8,6 +8,13 @@
     },
     {
         "functionality": {
+            "name": "DISPLAY_5V",
+            "outputs": ["EN_S1"],
+            "restart": true
+        }
+    },
+    {
+        "functionality": {
             "name": "PC_19V",
             "outputs": ["EN_S4"],
             "enabled": true
