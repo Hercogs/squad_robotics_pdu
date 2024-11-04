@@ -128,7 +128,21 @@ class configurePcbNode(Node):
                 raw["functionality"]["cmd"] = "setOutputByName"
                 raw["functionality"]["functionalityName"] = functionality['name']
                 raw["functionality"]["outputLevel"] = int(functionality['enabled'])
-                self.sendOut.append(raw["functionality"])                
+                self.sendOut.append(raw["functionality"])      
+            # special case for display - it needs to be turned off and on to avoid reconnecting uart module
+            if 'restart' in functionality:
+                # turn output off
+                raw = {"functionality": {}}
+                raw["functionality"]["cmd"] = "setOutputByName"
+                raw["functionality"]["functionalityName"] = functionality['name']
+                raw["functionality"]["outputLevel"] = 0
+                self.sendOut.append(raw["functionality"])
+                
+                time.sleep(1)
+                # turn output on again
+                raw["functionality"]["outputLevel"] = 1
+                self.sendOut.append(raw["functionality"])
+
 
     def publish_messages(self):
         message = {}
