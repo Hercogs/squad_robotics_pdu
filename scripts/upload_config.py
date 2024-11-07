@@ -8,6 +8,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 import time
 import random
+from copy import deepcopy
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -137,11 +138,11 @@ class configurePcbNode(Node):
                 raw["functionality"]["functionalityName"] = functionality['name']
                 raw["functionality"]["outputLevel"] = 0
                 self.sendOut.append(raw["functionality"])
-                
-                time.sleep(1)
+
                 # turn output on again
-                raw["functionality"]["outputLevel"] = 1
-                self.sendOut.append(raw["functionality"])
+                raw2 = deepcopy(raw)
+                raw2["functionality"]["outputLevel"] = 1
+                self.sendOut.append(raw2["functionality"])
 
 
     def publish_messages(self):
