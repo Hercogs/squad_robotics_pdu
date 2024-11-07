@@ -24,7 +24,7 @@
         "functionality": {
             "name": "MTR_1_POW",
             "outputs": ["VO_0", "VO_1", "VO_2", "VO_10", "VO_3", "VO_11", "VO_4"],
-            "setOverCurrentIntegralLimit": 42,
+            "setOverCurrentIntegralLimit": 60,
             "enabled": true
         }
     },
@@ -32,7 +32,7 @@
         "functionality": {
             "name": "MTR_2_POW",
             "outputs": ["VO_5", "VO_6", "VO_7", "VO_14", "VO_15", "VO_19", "VO_20"],
-            "setOverCurrentIntegralLimit": 42,
+            "setOverCurrentIntegralLimit": 60,
             "enabled": true
         }
     },
