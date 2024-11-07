@@ -39,7 +39,10 @@ class InputStatePublisher(Node):
 
         exec_status = msg_json["EXEC"]
 
-        if exec_status != "OK":
+        if exec_status != "OK" or type(exec_status) != dict:
+            return
+        
+        if "RES" not in exec_status.keys():
             return
 
         res = msg_json["RES"]
