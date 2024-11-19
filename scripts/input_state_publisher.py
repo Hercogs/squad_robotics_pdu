@@ -37,16 +37,18 @@ class InputStatePublisher(Node):
         
         msg_json = json.loads(msg.data)
 
+        if "EXEC" not in msg_json.keys():
+            return
+
         exec_status = msg_json["EXEC"]
 
-        if exec_status != "OK" or type(exec_status) != dict:
+        if exec_status != "OK" or "RES" not in msg_json.keys():
             return
         
-        if "RES" not in exec_status.keys():
-            return
-
         res = msg_json["RES"]
         res = res.split(" ")
+        if len(res) < 3:
+            return
         functionality_name = res[0]
         functionality_status = res[2] == "HIGH"
 
@@ -57,6 +59,7 @@ class InputStatePublisher(Node):
         new_msg = String()
         new_msg.data = json.dumps(self.input_status)
         self.pub_input_state.publish(new_msg)
+
 
     def query_pdu(self):
         """
@@ -103,6 +106,7 @@ class InputStatePublisher(Node):
             if 'inputs' in functionality:
                 # Assume each functionality has excatly 1 input pin
                 self.input_status[functionality["name"]] = False
+                self.get_logger().info(f'Input state publisher listnening input: {functionality["name"]}')
 
 def main():
     rclpy.init()
