@@ -128,7 +128,7 @@ class BatteryMonitorService(Node):
             result = (result << 8) | data[start_index + i]
         return result
 
-    def __send_CANBUS(self, msg_id:int, response_timeout:float=1) -> can.Message.data:
+    def __send_CANBUS(self, msg_id:int, response_timeout:float=1):
         """
         Send CANBUS message to battery and return response
         * `msg_id` - CAN message id
